@@ -5,7 +5,12 @@ using UnityEngine;
 public class BulletController : MonoBehaviour
 {
     private Rigidbody rigidbody;
+
     public float speed = 25.0f;
+
+    // 命中音
+    public AudioClip hitSE;
+
     Counter counter;
 
     public void SetCounter(Counter c)
@@ -13,28 +18,32 @@ public class BulletController : MonoBehaviour
         this.counter = c;
     }
 
-    private void OnCollisionEnter(Collision collision) //Bulletが何かと衝突したとき
+    private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Target") //Targetというタグがついた物体だった場合
+        if (collision.gameObject.tag == "Target")
         {
+            // 命中音を再生
+            AudioSource.PlayClipAtPoint(hitSE, collision.transform.position);
+
             if (counter != null)
             {
                 counter.hitCount++;
                 Debug.Log(counter.hitCount + " Hit");
             }
         }
-        Invoke("destroyBullet", 1); //一秒後にdestroyBullet()を呼び出す
+
+        Invoke("destroyBullet", 1);
     }
 
     private void destroyBullet()
     {
-        Destroy(this.gameObject); //Objectを消す       
+        Destroy(this.gameObject);
     }
 
     void Start()
     {
-        this.rigidbody = GetComponent<Rigidbody>();
-        this.rigidbody.velocity = new Vector3(0, 0, this.speed); //初速度の設定
+        rigidbody = GetComponent<Rigidbody>();
+        rigidbody.velocity = new Vector3(0, 0, speed);
     }
 
     void Update()
